@@ -1,0 +1,38 @@
+# filebeat.inputs:
+#   - type: log
+#     paths:
+#       - /var/app/log/*.log
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+      hints.default_config.enabled: false
+
+output.elasticsearch:
+  hosts: ["${ELASTIC_HOST}:${ELASTIC_PORT}"]
+  username: ${ELASTIC_USERNAME}
+  password: ${ELASTIC_PASSWORD}
+  indices:
+    - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+# output.console:
+#   pretty: true
+
+processors:
+  - drop_fields:
+      fields: ["ecs", "log", "input"]
+      ignore_missing: true
+  - dissect:
+      when:
+         contains:
+          "message": "app-log"
+      tokenizer: 'app-log - %{environment} - %{level} - %{event.time} - %{event.message} - %{event.context} - %{event.extra}'
+      field: "message"
+      target_prefix: ""
+  - drop_fields:
+      when:
+        contains:
+          "message": "app-log"
+      fields: ["message"]
+      ignore_missing: true

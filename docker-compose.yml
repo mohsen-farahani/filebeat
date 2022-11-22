@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  
+  filebeat:
+    build:
+      context: .
+      args:
+        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
+    user: root
+    volumes:
+      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      ELASTIC_HOST: ${ELASTIC_HOST:-}
+      ELASTIC_PORT: ${ELASTIC_PORT:-}
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+    networks:
+      - elk
+
+networks:
+  elk:
+    driver: bridge
