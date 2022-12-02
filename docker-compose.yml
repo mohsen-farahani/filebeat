@@ -9,6 +9,7 @@ services:
         FILEBEAT_VERSION: ${FILEBEAT_VERSION}
     user: root
     volumes:
+      - ./log:/var/app/log
       - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro

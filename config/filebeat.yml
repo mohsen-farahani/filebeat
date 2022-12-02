@@ -9,6 +9,7 @@ filebeat.autodiscover:
       hints.enabled: true
       hints.default_config.enabled: false
 
+
 output.elasticsearch:
   hosts: ["${ELASTIC_HOST}:${ELASTIC_PORT}"]
   username: ${ELASTIC_USERNAME}
@@ -21,18 +22,19 @@ output.elasticsearch:
 
 processors:
   - drop_fields:
-      fields: ["ecs", "log", "input"]
+      fields: ["ecs", "log", "input", "docker"]
       ignore_missing: true
-  - dissect:
-      when:
-         contains:
-          "message": "app-log"
-      tokenizer: 'app-log - %{environment} - %{level} - %{event.time} - %{event.message} - %{event.context} - %{event.extra}'
-      field: "message"
-      target_prefix: ""
+  - decode_json_fields:
+        fields: ["message"]
+        process_array: false
+        max_depth: 1
+        target: "event"
+        overwrite_keys: false
+        add_error_key: true
   - drop_fields:
-      when:
-        contains:
-          "message": "app-log"
       fields: ["message"]
       ignore_missing: true
+  - drop_event:
+        when:
+          not:
+            has_fields: ["event.application"]
