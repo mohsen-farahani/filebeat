@@ -24,5 +24,14 @@ ELASTIC_PASSWORD | changeme | Elasticsearch password
 The format which You have to follow in your applications to use Filebeat:
 
 ```
-app-log - %{environment} - %{level} - %{event.time} - %{event.message} - %{event.context} - %{event.extra}
+{
+    "application": "Laravel"
+    "message": "REST_API",
+    "context": {},
+    "level": 200,
+    "level_name": "INFO",
+    "channel": "local",
+    "datetime": "2022-12-01T14:14:18.762877+03:30",
+    "extra": {},
+}
 ```
